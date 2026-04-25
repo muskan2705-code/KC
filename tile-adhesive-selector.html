@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KC Fixit Tile Adhesive Selector</title>
+  <meta name="description" content="Use the KC Fixit Tile Adhesive Selector to identify the right adhesive grade based on area, tile type, size, and site condition.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .selector-page {
+      padding-top: 18px;
+    }
+
+    .selector-tool {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid rgba(19, 22, 23, 0.08);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .selector-tool__sidebar {
+      padding: 28px 22px;
+      background: linear-gradient(180deg, #111618 0%, #1a2126 100%);
+      color: var(--text-inverse);
+    }
+
+    .selector-tool__sidebar h2 {
+      margin: 0 0 24px;
+      font-family: var(--font-heading);
+      font-size: 1.45rem;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .selector-progress {
+      display: grid;
+      gap: 14px;
+    }
+
+    .selector-progress__item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .selector-progress__item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 40px;
+      bottom: -18px;
+      border-left: 2px dashed rgba(255, 255, 255, 0.16);
+    }
+
+    .selector-progress__num {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.16);
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.04);
+      transition: all 180ms ease;
+    }
+
+    .selector-progress__item.is-active .selector-progress__num,
+    .selector-progress__item.is-done .selector-progress__num {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #101417;
+    }
+
+    .selector-progress__label {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.93rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .selector-progress__value {
+      display: block;
+      margin-top: 3px;
+      color: rgba(255, 255, 255, 0.58);
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+
+    .selector-tool__main {
+      padding: 32px;
+    }
+
+    .selector-panel[hidden] {
+      display: none;
+    }
+
+    .selector-panel__title {
+      margin: 0 0 20px;
+      font-family: var(--font-heading);
+      font-size: clamp(1.55rem, 3vw, 2.3rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .selector-options {
+      display: grid;
+      gap: 14px;
+    }
+
+    .selector-options.columns-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .selector-options.columns-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .selector-options.columns-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .selector-option {
+      width: 100%;
+      min-height: 108px;
+      padding: 20px 16px;
+      border: 2px solid rgba(19, 22, 23, 0.1);
+      border-radius: 18px;
+      background: #fbfaf7;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .selector-option:hover,
+    .selector-option:focus-visible {
+      border-color: rgba(242, 106, 33, 0.42);
+      background: #fff6f1;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 30px rgba(13, 18, 20, 0.08);
+    }
+
+    .selector-option.is-selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, #ff874a 100%);
+      color: #101417;
+    }
+
+    .selector-option__title {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .selector-option__note {
+      display: block;
+      margin-top: 6px;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .selector-option.is-selected .selector-option__note {
+      color: rgba(16, 20, 23, 0.74);
+    }
+
+    .selector-tool__nav {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .selector-button {
+      min-height: 48px;
+      padding: 0 22px;
+      border: 1px solid rgba(19, 22, 23, 0.12);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .selector-button:hover,
+    .selector-button:focus-visible {
+      transform: translateY(-1px);
+    }
+
+    .selector-button--next {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--primary) 0%, #ff874a 100%);
+      color: #101417;
+      box-shadow: 0 14px 26px rgba(242, 106, 33, 0.2);
+    }
+
+    .selector-button--next:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .selector-button--back {
+      background: transparent;
+    }
+
+    .selector-result__badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 12px;
+      border: 1px solid rgba(242, 106, 33, 0.28);
+      border-radius: 999px;
+      background: rgba(242, 106, 33, 0.1);
+      color: var(--primary-deep);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .selector-result__hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .selector-result__copy {
+      min-width: 0;
+    }
+
+    .selector-result__name {
+      margin: 18px 0 8px;
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .selector-result__tag {
+      display: inline-flex;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #131617;
+      color: #f8f8f8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .selector-result__desc {
+      margin: 18px 0 0;
+      color: var(--text-soft);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .selector-result__media {
+      position: relative;
+      min-height: 320px;
+      margin: 0;
+      padding: 14px;
+      border: 1px solid rgba(19, 22, 23, 0.08);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top left, rgba(242, 106, 33, 0.16), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 242, 236, 0.96));
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .selector-result__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 292px;
+      border-radius: 20px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .selector-result__media-badge {
+      position: absolute;
+      top: 28px;
+      left: 28px;
+      z-index: 2;
+      display: inline-flex;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(19, 22, 23, 0.84);
+      color: #f8f8f8;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .selector-result__media-note {
+      position: absolute;
+      right: 28px;
+      bottom: 28px;
+      left: 28px;
+      z-index: 2;
+      display: grid;
+      gap: 6px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(19, 22, 23, 0.26), rgba(19, 22, 23, 0.82));
+      color: #f8f8f8;
+    }
+
+    .selector-result__media-note strong {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .selector-result__media-note span {
+      color: rgba(248, 248, 248, 0.78);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .selector-specs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .selector-spec {
+      padding: 14px;
+      border-radius: 16px;
+      background: #fbfaf7;
+      border: 1px solid rgba(19, 22, 23, 0.06);
+    }
+
+    .selector-spec__label {
+      display: block;
+      color: var(--text-soft);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .selector-spec__value {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .selector-tip {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 14px 14px 0;
+      background: #fff6f1;
+      color: #7a3010;
+      line-height: 1.75;
+    }
+
+    .selector-related {
+      margin-top: 20px;
+    }
+
+    .selector-related__title {
+      margin: 0 0 10px;
+      color: var(--text-soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .selector-related__grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .selector-related__card {
+      display: grid;
+      gap: 4px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #fbfaf7;
+      border: 1px solid rgba(19, 22, 23, 0.06);
+    }
+
+    .selector-related__card strong {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .selector-related__card span {
+      color: var(--text-soft);
+      font-size: 0.86rem;
+      line-height: 1.5;
+    }
+
+    .selector-result__actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .selector-result__restart {
+      margin-top: 16px;
+    }
+
+    .selector-result__restart button {
+      border: none;
+      background: none;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .selector-page-hero {
+      padding: 56px 0 30px;
+    }
+
+    .selector-page-hero__inner {
+      max-width: 980px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .selector-page-hero__title {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      color: var(--primary);
+    }
+
+    .selector-page-hero__subline {
+      max-width: 860px;
+      margin: 24px auto 0;
+      color: var(--text);
+      font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1120px) {
+      .selector-tool {
+        grid-template-columns: 1fr;
+      }
+
+      .selector-tool__sidebar {
+        padding-bottom: 18px;
+      }
+
+      .selector-progress {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .selector-progress__item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .selector-progress__item:not(:last-child)::after {
+        display: none;
+      }
+
+      .selector-result__hero {
+        grid-template-columns: 1fr;
+      }
+
+      .selector-result__media {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .selector-options.columns-4,
+      .selector-options.columns-3,
+      .selector-options.columns-2,
+      .selector-specs,
+      .selector-related__grid,
+      .selector-result__actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .selector-page-hero {
+        padding: 42px 0 22px;
+      }
+
+      .selector-page-hero__subline {
+        margin-top: 18px;
+        font-size: 1rem;
+      }
+
+      .selector-tool__main,
+      .selector-tool__sidebar {
+        padding: 24px 20px;
+      }
+
+      .selector-progress {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .selector-options.columns-4,
+      .selector-options.columns-3,
+      .selector-options.columns-2,
+      .selector-specs,
+      .selector-related__grid,
+      .selector-result__actions {
+        grid-template-columns: 1fr;
+      }
+
+      .selector-tool__nav {
+        flex-direction: column;
+      }
+
+      .selector-button {
+        width: 100%;
+      }
+
+      .selector-result__media-note {
+        right: 22px;
+        bottom: 22px;
+        left: 22px;
+      }
+    }
+  </style>
+</head>
+<body data-page="technical" data-nav-parent="technical.html">
+  <header class="site-header">
+    <div class="container header-shell">
+      <a class="brand-mark" href="index.html" aria-label="KC Fixit home">
+        <span class="brand-mark__name">KC Fixit</span>
+        <span class="brand-mark__tag">Construction Chemical Systems</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="products.html">Products</a>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown__control">
+            <button class="nav-dropdown__link" type="button" aria-expanded="false">Technical</button>
+            <button class="nav-dropdown__toggle" type="button" aria-expanded="false" aria-label="Toggle technical menu">
+              <span></span>
+            </button>
+          </div>
+          <div class="nav-dropdown__menu">
+            <a href="tile-adhesive-selector.html">Tile Adhesive Selector</a>
+            <a href="tile-adhesive-calculator.html">Tile Adhesive Calculator</a>
+            <a href="blogs.html">Blogs</a>
+            <a href="catalogue.html">Brochures</a>
+          </div>
+        </div>
+        <a href="contact.html">Contact</a>
+        <a class="button button--ghost button--small" href="dealer-inquiry.html">Dealer Inquiry</a>
+        <a class="button button--ghost button--small" href="catalogue.html">Download Catalogue</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="selector-page-hero">
+      <div class="container">
+        <div class="selector-page-hero__inner">
+          <h1 class="selector-page-hero__title">Tile Adhesive Selector</h1>
+          <p class="selector-page-hero__subline">Find the right tile adhesive more easily with our guided selector built for clear, confident recommendations.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section selector-page">
+      <div class="container">
+        <div class="selector-tool">
+          <aside class="selector-tool__sidebar" aria-label="Selection progress">
+            <h2>Selection Steps</h2>
+            <div class="selector-progress">
+              <div class="selector-progress__item is-active" data-progress-step="1">
+                <div class="selector-progress__num">1</div>
+                <div>
+                  <span class="selector-progress__label">Area</span>
+                  <span class="selector-progress__value" data-progress-value="1"></span>
+                </div>
+              </div>
+              <div class="selector-progress__item" data-progress-step="2">
+                <div class="selector-progress__num">2</div>
+                <div>
+                  <span class="selector-progress__label">Tile Type</span>
+                  <span class="selector-progress__value" data-progress-value="2"></span>
+                </div>
+              </div>
+              <div class="selector-progress__item" data-progress-step="3">
+                <div class="selector-progress__num">3</div>
+                <div>
+                  <span class="selector-progress__label">Tile Size</span>
+                  <span class="selector-progress__value" data-progress-value="3"></span>
+                </div>
+              </div>
+              <div class="selector-progress__item" data-progress-step="4">
+                <div class="selector-progress__num">4</div>
+                <div>
+                  <span class="selector-progress__label">Site Condition</span>
+                  <span class="selector-progress__value" data-progress-value="4"></span>
+                </div>
+              </div>
+              <div class="selector-progress__item" data-progress-step="5">
+                <div class="selector-progress__num">5</div>
+                <div>
+                  <span class="selector-progress__label">Recommendation</span>
+                  <span class="selector-progress__value" data-progress-value="5"></span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="selector-tool__main">
+            <section class="selector-panel" data-panel="1">
+              <h2 class="selector-panel__title">Select the Area</h2>
+              <div class="selector-options columns-3">
+                <button class="selector-option" type="button" data-step="1" data-value="internal" data-label="Internal Area">
+                  <span class="selector-option__title">Internal Area</span>
+                  <span class="selector-option__note">Living spaces, bedrooms, lobbies, and internal walls or floors</span>
+                </button>
+                <button class="selector-option" type="button" data-step="1" data-value="external" data-label="External Area">
+                  <span class="selector-option__title">External Area</span>
+                  <span class="selector-option__note">Terraces, balconies, facades, and outdoor exposed surfaces</span>
+                </button>
+                <button class="selector-option" type="button" data-step="1" data-value="wet" data-label="Wet or Pool Area">
+                  <span class="selector-option__title">Wet or Pool Area</span>
+                  <span class="selector-option__note">Bathrooms, showers, wash areas, pools, and constantly wet zones</span>
+                </button>
+              </div>
+              <div class="selector-tool__nav">
+                <button class="selector-button selector-button--next" type="button" data-next="2" disabled>Next</button>
+              </div>
+            </section>
+
+            <section class="selector-panel" data-panel="2" hidden>
+              <h2 class="selector-panel__title">Select the Tile or Stone Type</h2>
+              <div class="selector-options columns-4">
+                <button class="selector-option" type="button" data-step="2" data-value="ceramic" data-label="Ceramic Tiles">
+                  <span class="selector-option__title">Ceramic Tiles</span>
+                  <span class="selector-option__note">Standard ceramic wall and floor tiles</span>
+                </button>
+                <button class="selector-option" type="button" data-step="2" data-value="vitrified" data-label="Vitrified Tiles">
+                  <span class="selector-option__title">Vitrified Tiles</span>
+                  <span class="selector-option__note">Denser vitrified and porcelain tile surfaces</span>
+                </button>
+                <button class="selector-option" type="button" data-step="2" data-value="stone" data-label="Marble or Stone">
+                  <span class="selector-option__title">Marble or Stone</span>
+                  <span class="selector-option__note">Natural stone, marble, granite, or other heavy finishes</span>
+                </button>
+                <button class="selector-option" type="button" data-step="2" data-value="mosaic" data-label="Glass Mosaic">
+                  <span class="selector-option__title">Glass Mosaic</span>
+                  <span class="selector-option__note">Small-format mosaic or specialty sheet applications</span>
+                </button>
+              </div>
+              <div class="selector-tool__nav">
+                <button class="selector-button selector-button--back" type="button" data-back="1">Back</button>
+                <button class="selector-button selector-button--next" type="button" data-next="3" disabled>Next</button>
+              </div>
+            </section>
+
+            <section class="selector-panel" data-panel="3" hidden>
+              <h2 class="selector-panel__title">Select the Tile Size</h2>
+              <div class="selector-options columns-3">
+                <button class="selector-option" type="button" data-step="3" data-value="small" data-label="Small Tiles">
+                  <span class="selector-option__title">Small Tiles</span>
+                  <span class="selector-option__note">Up to 4 sq. ft.</span>
+                </button>
+                <button class="selector-option" type="button" data-step="3" data-value="medium" data-label="Medium Format">
+                  <span class="selector-option__title">Medium Format</span>
+                  <span class="selector-option__note">More than 4 sq. ft. and up to 16 sq. ft.</span>
+                </button>
+                <button class="selector-option" type="button" data-step="3" data-value="large" data-label="Large Format">
+                  <span class="selector-option__title">Large Format</span>
+                  <span class="selector-option__note">Above 16 sq. ft. and other demanding slab sizes</span>
+                </button>
+              </div>
+              <div class="selector-tool__nav">
+                <button class="selector-button selector-button--back" type="button" data-back="2">Back</button>
+                <button class="selector-button selector-button--next" type="button" data-next="4" disabled>Next</button>
+              </div>
+            </section>
+
+            <section class="selector-panel" data-panel="4" hidden>
+              <h2 class="selector-panel__title">Select the Site Condition</h2>
+              <div class="selector-options columns-2">
+                <button class="selector-option" type="button" data-step="4" data-value="standard" data-label="Standard Conditions">
+                  <span class="selector-option__title">Standard Conditions</span>
+                  <span class="selector-option__note">Routine indoor conditions with no special performance demand</span>
+                </button>
+                <button class="selector-option" type="button" data-step="4" data-value="heavy" data-label="Heavy Traffic">
+                  <span class="selector-option__title">Heavy Traffic</span>
+                  <span class="selector-option__note">Commercial use, higher loading, or more demanding service conditions</span>
+                </button>
+                <button class="selector-option" type="button" data-step="4" data-value="movement" data-label="Movement-Prone Surface">
+                  <span class="selector-option__title">Movement-Prone Surface</span>
+                  <span class="selector-option__note">Substrates or areas where additional flexibility matters more</span>
+                </button>
+                <button class="selector-option" type="button" data-step="4" data-value="wet-critical" data-label="Critical Wet Zone">
+                  <span class="selector-option__title">Critical Wet Zone</span>
+                  <span class="selector-option__note">Constant moisture, high exposure, or failure-sensitive wet locations</span>
+                </button>
+              </div>
+              <div class="selector-tool__nav">
+                <button class="selector-button selector-button--back" type="button" data-back="3">Back</button>
+                <button class="selector-button selector-button--next" type="button" data-show-result disabled>View Recommendation</button>
+              </div>
+            </section>
+
+            <section class="selector-panel" data-panel="5" hidden>
+              <div class="selector-result__hero">
+                <div class="selector-result__copy">
+                  <span class="selector-result__badge">Recommended KC Fixit Grade</span>
+                  <h2 class="selector-result__name" id="selector-result-name"></h2>
+                  <span class="selector-result__tag" id="selector-result-tag"></span>
+                  <p class="selector-result__desc" id="selector-result-desc"></p>
+                </div>
+                <figure class="selector-result__media">
+                  <span class="selector-result__media-badge">Recommended Visual</span>
+                  <img class="selector-result__image" id="selector-result-image" src="tile-adhesive-hero.jpeg" alt="KC Fixit tile adhesive recommendation visual" loading="eager" decoding="async">
+                  <figcaption class="selector-result__media-note">
+                    <strong id="selector-result-image-title">KC Fixit Grade</strong>
+                    <span id="selector-result-image-note">Best for professional tile fixing selection.</span>
+                  </figcaption>
+                </figure>
+              </div>
+              <div class="selector-specs" id="selector-result-specs"></div>
+              <div class="selector-tip" id="selector-result-tip"></div>
+              <div class="selector-related">
+                <p class="selector-related__title">Recommended System Support</p>
+                <div class="selector-related__grid" id="selector-result-related"></div>
+              </div>
+              <div class="selector-result__actions">
+                <a class="button" href="project-inquiry.html">Request Product Guidance</a>
+                <a class="button button--ghost" href="products.html#tile-fixing">Open Tile Fixing Range</a>
+              </div>
+              <div class="selector-result__restart">
+                <button type="button" id="selector-restart">Start Over</button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark__name">KC Fixit</span>
+        <p>Premium construction chemical systems for tile fixing, grouting, waterproofing, plastering, block bonding, and polymer-led project support.</p>
+        <a class="button button--ghost button--small" href="contact.html">Send Enquiry</a>
+      </div>
+      <div>
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="applications.html">Applications</a></li>
+          <li><a href="technical.html">Technical</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Key Inquiries</h3>
+        <ul class="footer-links">
+          <li><a href="dealer-inquiry.html">Dealer Inquiry</a></li>
+          <li><a href="project-inquiry.html">Project Inquiry</a></li>
+          <li><a href="catalogue.html">Download Catalogue</a></li>
+          <li><a href="mailto:kc.fixitt@gmail.com">kc.fixitt@gmail.com</a></li>
+          <li><a href="https://wa.me/917016577724">+917016577724</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li>Savani Brothers, Upper Ground Floor, FP-455B, Near Anath Ashram, Katargam Main Road, Katargam, Surat, Gujarat 395004</li>
+          <li><span class="social-badge" aria-label="LinkedIn"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.94 8.5H3.56V20H6.94V8.5ZM7.16 4.94C7.16 3.89 6.37 3.06 5.25 3.06C4.13 3.06 3.34 3.89 3.34 4.94C3.34 5.97 4.11 6.81 5.21 6.81H5.23C6.37 6.81 7.16 5.97 7.16 4.94ZM20.66 13.01C20.66 9.48 18.77 7.84 16.25 7.84C14.21 7.84 13.3 8.96 12.79 9.75V8.5H9.41C9.45 9.33 9.41 20 9.41 20H12.79V13.58C12.79 13.23 12.82 12.88 12.92 12.63C13.2 11.93 13.84 11.21 14.94 11.21C16.39 11.21 16.97 12.32 16.97 13.94V20H20.35V13.01H20.66Z" fill="currentColor"/></svg><span>LinkedIn</span></span></li>
+          <li><a class="social-badge" href="https://www.instagram.com/kcfixit_?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 7.38A4.62 4.62 0 1 0 12 16.62A4.62 4.62 0 1 0 12 7.38ZM12 15A3 3 0 1 1 12 9A3 3 0 1 1 12 15ZM17.89 7.19A1.08 1.08 0 1 1 15.73 7.19A1.08 1.08 0 1 1 17.89 7.19ZM20.96 8.29C20.89 6.86 20.56 5.59 19.51 4.54C18.47 3.5 17.19 3.17 15.76 3.09C14.29 3 9.71 3 8.24 3.09C6.82 3.16 5.54 3.49 4.49 4.54C3.44 5.59 3.12 6.86 3.04 8.29C2.95 9.76 2.95 14.24 3.04 15.71C3.11 17.14 3.44 18.41 4.49 19.46C5.54 20.51 6.81 20.84 8.24 20.91C9.71 21 14.29 21 15.76 20.91C17.19 20.84 18.46 20.51 19.51 19.46C20.56 18.41 20.89 17.14 20.96 15.71C21.05 14.24 21.05 9.76 20.96 8.29ZM19.03 17.21C18.72 17.99 18.12 18.59 17.34 18.9C16.17 19.36 13.39 19.25 12 19.25C10.61 19.25 7.82 19.36 6.66 18.9C5.88 18.59 5.28 17.99 4.97 17.21C4.51 16.05 4.62 13.26 4.62 11.88C4.62 10.49 4.51 7.71 4.97 6.54C5.28 5.77 5.88 5.17 6.66 4.86C7.82 4.39 10.61 4.5 12 4.5C13.39 4.5 16.17 4.39 17.34 4.86C18.11 5.16 18.71 5.77 19.03 6.54C19.49 7.71 19.38 10.49 19.38 11.88C19.38 13.26 19.49 16.05 19.03 17.21Z" fill="currentColor"/></svg><span>Instagram</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; <span data-year></span> KC Fixit. All rights reserved.</p>
+      <p>Website concept designed for premium industrial B2B conversion.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    const selectorPanels = Array.from(document.querySelectorAll("[data-panel]"));
+    const selectorProgress = Array.from(document.querySelectorAll("[data-progress-step]"));
+    const selectorState = {};
+    const stepKeys = {
+      1: "area",
+      2: "tileType",
+      3: "tileSize",
+      4: "condition"
+    };
+
+    const productData = {
+      standard: {
+        name: "KC Fixit Standard",
+        tag: "Entry Grade Tile Adhesive",
+        desc: "Recommended for regular ceramic tile fixing in internal dry areas where tile size is smaller and site conditions are straightforward.",
+        image: {
+          src: "tile-adhesive-hero.jpeg",
+          alt: "KC Fixit Standard recommendation visual for ceramic tile fixing"
+        },
+        specs: {
+          bestFor: "Small ceramic tiles",
+          useArea: "Internal dry areas",
+          demand: "Routine fixing",
+          pairWith: "Tile Grout"
+        },
+        tip: "Use on sound, level substrates. If the project includes vitrified tiles, external exposure, or wetter service conditions, move up to a higher KC Fixit grade.",
+        related: [
+          ["KC Fixit Tile Grout", "Routine joint filling support"],
+          ["KC Fixit Plasto Fix", "Cleaner wall preparation before fixing"]
+        ]
+      },
+      advance: {
+        name: "KC Fixit Advance",
+        tag: "Everyday Professional Grade",
+        desc: "Recommended for internal vitrified and ceramic tile work where contractors need stronger day-to-day bond confidence than a basic entry-grade adhesive.",
+        image: {
+          src: "hero-tile-installation.jpeg",
+          alt: "KC Fixit Advance recommendation visual for internal vitrified tile work"
+        },
+        specs: {
+          bestFor: "Internal vitrified tiles",
+          useArea: "Walls and floors",
+          demand: "Everyday professional use",
+          pairWith: "Tile Grout"
+        },
+        tip: "A dependable everyday step-up when the site needs a stronger adhesive ladder than a regular ceramic tile installation.",
+        related: [
+          ["KC Fixit Tile Grout", "Cleaner finish across routine joints"],
+          ["KC Fixit SBR Latex Pro", "Support for repair and bonding layers"]
+        ]
+      },
+      xtreme: {
+        name: "KC Fixit Xtreme",
+        tag: "High Performance Grade",
+        desc: "Recommended for medium to large internal tiles, natural stone, and high-use areas that demand a stronger adhesive system and better installation confidence.",
+        image: {
+          src: "hero-tile-installation-2.jpg",
+          alt: "KC Fixit Xtreme recommendation visual for larger internal tile and stone work"
+        },
+        specs: {
+          bestFor: "Larger tiles and stone",
+          useArea: "Demanding internal areas",
+          demand: "High performance",
+          pairWith: "Epoxyshield 2K"
+        },
+        tip: "Use this grade when tile size, traffic, or project expectations move beyond routine internal fixing and a stronger adhesive ladder is needed.",
+        related: [
+          ["KC Fixit Tile Grout", "For standard internal jointing"],
+          ["KC Fixit Epoxyshield 2K", "For tougher wet-zone joint performance"]
+        ]
+      },
+      flex: {
+        name: "KC Fixit Flex",
+        tag: "Flexible Grade",
+        desc: "Recommended for external areas, wet zones, and movement-prone applications where flexibility and long-term bond stability matter more than routine fixing.",
+        image: {
+          src: "hero-waterproofing-roller.jpeg",
+          alt: "KC Fixit Flex recommendation visual for wet and external tile applications"
+        },
+        specs: {
+          bestFor: "Wet and external areas",
+          useArea: "Balconies, baths, terraces",
+          demand: "Flexible performance",
+          pairWith: "Aquacoat 2K"
+        },
+        tip: "Use after proper substrate preparation and combine with Aquacoat 2K in moisture-prone areas for a more complete tile installation system.",
+        related: [
+          ["KC Fixit Aquacoat 2K", "Waterproofing support before tiling"],
+          ["KC Fixit Tile Grout", "Standard joint filling after fixing"]
+        ]
+      },
+      superflex: {
+        name: "KC Fixit Superflex",
+        tag: "Premium Flexible Grade",
+        desc: "Recommended for large-format tiles, critical substrates, glass mosaic, pools, terraces, facades, and other demanding tile or stone installations.",
+        image: {
+          src: "hero-tile-installation-2.jpg",
+          alt: "KC Fixit Superflex recommendation visual for large-format and critical tile installations"
+        },
+        specs: {
+          bestFor: "Large format and critical jobs",
+          useArea: "Pools, terraces, facades",
+          demand: "Premium flexible",
+          pairWith: "Epoxyshield 3K"
+        },
+        tip: "Choose this grade when failure later would be expensive, especially for exposed areas, constant moisture, large formats, or more critical tile and stone work.",
+        related: [
+          ["KC Fixit Aquacoat 2K", "Pre-tile waterproofing in critical wet zones"],
+          ["KC Fixit Epoxyshield 3K", "High-performance jointing for tougher areas"]
+        ]
+      }
+    };
+
+    let currentSelectorStep = 1;
+
+    function updateSelectorProgress(activeStep) {
+      selectorProgress.forEach((item) => {
+        const step = Number(item.dataset.progressStep);
+        item.classList.toggle("is-active", step === activeStep);
+        item.classList.toggle("is-done", step < activeStep || (activeStep === 5 && step === 5));
+
+        const valueNode = document.querySelector(`[data-progress-value="${step}"]`);
+
+        if (!valueNode) {
+          return;
+        }
+
+        if (step < 5) {
+          const key = stepKeys[step];
+          valueNode.textContent = selectorState[key]?.label || "";
+          return;
+        }
+
+        valueNode.textContent = selectorState.result?.name || "";
+      });
+    }
+
+    function showSelectorStep(step) {
+      currentSelectorStep = step;
+      selectorPanels.forEach((panel) => {
+        panel.hidden = Number(panel.dataset.panel) !== step;
+      });
+      updateSelectorProgress(step);
+    }
+
+    function setStepSelection(step, option) {
+      const key = stepKeys[step];
+      const container = option.closest(".selector-options");
+
+      container.querySelectorAll(".selector-option").forEach((card) => {
+        card.classList.remove("is-selected");
+      });
+
+      option.classList.add("is-selected");
+
+      selectorState[key] = {
+        value: option.dataset.value,
+        label: option.dataset.label
+      };
+
+      const nextButton = option.closest(".selector-panel").querySelector(".selector-button--next");
+
+      if (nextButton) {
+        nextButton.disabled = false;
+      }
+
+      updateSelectorProgress(currentSelectorStep);
+    }
+
+    function getRecommendation() {
+      const area = selectorState.area?.value || "internal";
+      const tileType = selectorState.tileType?.value || "ceramic";
+      const tileSize = selectorState.tileSize?.value || "small";
+      const condition = selectorState.condition?.value || "standard";
+
+      if (area === "wet" || condition === "wet-critical") {
+        if (tileType === "mosaic" || tileType === "stone" || tileSize === "large" || condition === "movement") {
+          return productData.superflex;
+        }
+
+        return productData.flex;
+      }
+
+      if (area === "external") {
+        if (tileSize === "large" || tileType === "stone" || condition === "movement" || condition === "heavy") {
+          return productData.superflex;
+        }
+
+        return productData.flex;
+      }
+
+      if (tileType === "mosaic") {
+        return productData.flex;
+      }
+
+      if (tileType === "stone") {
+        if (tileSize === "large" || condition === "movement" || condition === "heavy") {
+          return productData.superflex;
+        }
+
+        return productData.xtreme;
+      }
+
+      if (tileSize === "large") {
+        return condition === "movement" ? productData.superflex : productData.xtreme;
+      }
+
+      if (condition === "movement") {
+        return productData.flex;
+      }
+
+      if (condition === "heavy") {
+        return tileType === "ceramic" ? productData.advance : productData.xtreme;
+      }
+
+      if (tileType === "vitrified") {
+        return productData.advance;
+      }
+
+      return productData.standard;
+    }
+
+    function renderResult() {
+      const result = getRecommendation();
+      selectorState.result = result;
+
+      document.getElementById("selector-result-name").textContent = result.name;
+      document.getElementById("selector-result-tag").textContent = result.tag;
+      document.getElementById("selector-result-desc").textContent = result.desc;
+      document.getElementById("selector-result-image").src = result.image.src;
+      document.getElementById("selector-result-image").alt = result.image.alt;
+      document.getElementById("selector-result-image-title").textContent = result.name;
+      document.getElementById("selector-result-image-note").textContent = `Best for ${result.specs.bestFor.toLowerCase()} and ${result.specs.useArea.toLowerCase()}.`;
+
+      const specsMarkup = Object.entries(result.specs)
+        .map(([key, value]) => {
+          const label = key
+            .replace(/([A-Z])/g, " $1")
+            .replace(/^./, (match) => match.toUpperCase());
+
+          return `
+            <div class="selector-spec">
+              <span class="selector-spec__label">${label}</span>
+              <span class="selector-spec__value">${value}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("selector-result-specs").innerHTML = specsMarkup;
+      document.getElementById("selector-result-tip").innerHTML = `<strong>Pro tip:</strong> ${result.tip}`;
+
+      const relatedMarkup = result.related
+        .map(([name, note]) => {
+          return `
+            <div class="selector-related__card">
+              <strong>${name}</strong>
+              <span>${note}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      document.getElementById("selector-result-related").innerHTML = relatedMarkup;
+      showSelectorStep(5);
+    }
+
+    function resetSelector() {
+      Object.keys(selectorState).forEach((key) => {
+        delete selectorState[key];
+      });
+
+      document.querySelectorAll(".selector-option").forEach((option) => {
+        option.classList.remove("is-selected");
+      });
+
+      document.querySelectorAll("[data-next]").forEach((button) => {
+        button.disabled = true;
+      });
+
+      showSelectorStep(1);
+    }
+
+    document.querySelectorAll(".selector-option").forEach((option) => {
+      option.addEventListener("click", () => {
+        setStepSelection(Number(option.dataset.step), option);
+      });
+    });
+
+    document.querySelectorAll("[data-next]").forEach((button) => {
+      button.addEventListener("click", () => {
+        showSelectorStep(Number(button.dataset.next));
+      });
+    });
+
+    document.querySelectorAll("[data-back]").forEach((button) => {
+      button.addEventListener("click", () => {
+        showSelectorStep(Number(button.dataset.back));
+      });
+    });
+
+    document.querySelector("[data-show-result]").addEventListener("click", renderResult);
+    document.getElementById("selector-restart").addEventListener("click", resetSelector);
+
+    showSelectorStep(1);
+  </script>
+</body>
+</html>
+
+
+

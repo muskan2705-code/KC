@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catalogue and Downloads | KC Fixit</title>
+  <meta name="description" content="Download the KC Fixit catalogue, product overviews, and technical-ready product information for project, dealer, and specification use.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .brochure-page {
+      padding: 56px 0 72px;
+    }
+
+    .brochure-page__head {
+      max-width: 860px;
+      margin: 0 auto 32px;
+      text-align: center;
+    }
+
+    .brochure-page__head h1 {
+      margin: 14px 0 18px;
+      color: var(--primary);
+      font-size: clamp(2.8rem, 6vw, 4.8rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .brochure-page__head p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: clamp(1.02rem, 1.7vw, 1.18rem);
+      line-height: 1.85;
+    }
+
+    .brochure-showcase {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .brochure-panel {
+      border: 1px solid rgba(19, 22, 23, 0.08);
+      border-radius: 32px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .brochure-panel {
+      display: grid;
+      gap: 22px;
+      padding: 34px;
+    }
+
+    .brochure-panel h2 {
+      margin: 0;
+      font-size: clamp(2rem, 3.1vw, 2.7rem);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    .brochure-panel p {
+      margin: 0;
+      color: var(--text-soft);
+      line-height: 1.8;
+    }
+
+    .brochure-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brochure-meta span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(242, 106, 33, 0.08);
+      color: var(--primary-deep);
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .brochure-points {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .brochure-points li {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(247, 245, 241, 0.9);
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.6;
+    }
+
+    .brochure-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .brochure-note {
+      font-size: 0.94rem;
+    }
+
+    @media (max-width: 1080px) {
+      .brochure-showcase {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .brochure-page {
+        padding-top: 42px;
+      }
+
+      .brochure-panel,
+      .brochure-panel {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+    }
+  </style>
+</head>
+<body data-page="catalogue">
+  <header class="site-header">
+    <div class="container header-shell">
+      <a class="brand-mark" href="index.html" aria-label="KC Fixit home">
+        <span class="brand-mark__name">KC Fixit</span>
+        <span class="brand-mark__tag">Construction Chemical Systems</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="products.html">Products</a>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown__control">
+            <button class="nav-dropdown__link" type="button" aria-expanded="false">Technical</button>
+            <button class="nav-dropdown__toggle" type="button" aria-expanded="false" aria-label="Toggle technical menu">
+              <span></span>
+            </button>
+          </div>
+          <div class="nav-dropdown__menu">
+            <a href="tile-adhesive-selector.html">Tile Adhesive Selector</a>
+            <a href="tile-adhesive-calculator.html">Tile Adhesive Calculator</a>
+            <a href="blogs.html">Blogs</a>
+            <a href="catalogue.html">Brochures</a>
+          </div>
+        </div>
+        <a href="contact.html">Contact</a>
+        <a class="button button--ghost button--small" href="dealer-inquiry.html">Dealer Inquiry</a>
+        <a class="button button--ghost button--small" href="catalogue.html">Download Catalogue</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="brochure-page">
+      <div class="container">
+        <div class="brochure-page__head">
+          <span class="eyebrow">Brochures</span>
+          <h1>Download the KC Fixit master brochure.</h1>
+          <p>
+            A clean, direct brochure page for project teams, dealers, architects, and buyers who need the latest KC
+            Fixit catalogue without extra steps.
+          </p>
+        </div>
+
+        <div class="brochure-showcase">
+          <article class="brochure-panel">
+            <div>
+              <span class="eyebrow">Main Brochure</span>
+              <h2>KC Fixit Catalogue</h2>
+            </div>
+
+            <p>
+              Access the complete brochure with product categories, application-focused solutions, and a quick overview
+              of the KC Fixit construction chemical range.
+            </p>
+
+            <div class="brochure-meta">
+              <span>PDF</span>
+              <span>3.1 MB</span>
+              <span>Latest upload</span>
+            </div>
+
+            <ul class="brochure-points">
+              <li>Tile adhesives, grouts, waterproofing systems, and supporting construction solutions.</li>
+              <li>Useful for project discussions, dealer reference, and product range sharing.</li>
+              <li>Direct brochure download from this page in one click.</li>
+            </ul>
+
+            <div class="brochure-actions">
+              <a class="button" href="KC-Fixit-Catalogue.pdf" download>Download Brochure</a>
+            </div>
+
+            <p class="brochure-note">
+              If you need a more specific product pack after reviewing the brochure, use the technical inquiry route
+              below.
+            </p>
+          </article>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark__name">KC Fixit</span>
+        <p>Premium construction chemical systems for tile fixing, grouting, waterproofing, plastering, block bonding, and polymer-led project support.</p>
+        <a class="button button--ghost button--small" href="contact.html">Send Enquiry</a>
+      </div>
+      <div>
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="applications.html">Applications</a></li>
+          <li><a href="technical.html">Technical</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Key Inquiries</h3>
+        <ul class="footer-links">
+          <li><a href="dealer-inquiry.html">Dealer Inquiry</a></li>
+          <li><a href="project-inquiry.html">Project Inquiry</a></li>
+          <li><a href="catalogue.html">Download Catalogue</a></li>
+          <li><a href="mailto:kc.fixitt@gmail.com">kc.fixitt@gmail.com</a></li>
+          <li><a href="https://wa.me/917016577724">+917016577724</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li>Savani Brothers, Upper Ground Floor, FP-455B, Near Anath Ashram, Katargam Main Road, Katargam, Surat, Gujarat 395004</li>
+          <li><span class="social-badge" aria-label="LinkedIn"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.94 8.5H3.56V20H6.94V8.5ZM7.16 4.94C7.16 3.89 6.37 3.06 5.25 3.06C4.13 3.06 3.34 3.89 3.34 4.94C3.34 5.97 4.11 6.81 5.21 6.81H5.23C6.37 6.81 7.16 5.97 7.16 4.94ZM20.66 13.01C20.66 9.48 18.77 7.84 16.25 7.84C14.21 7.84 13.3 8.96 12.79 9.75V8.5H9.41C9.45 9.33 9.41 20 9.41 20H12.79V13.58C12.79 13.23 12.82 12.88 12.92 12.63C13.2 11.93 13.84 11.21 14.94 11.21C16.39 11.21 16.97 12.32 16.97 13.94V20H20.35V13.01H20.66Z" fill="currentColor"/></svg><span>LinkedIn</span></span></li>
+          <li><a class="social-badge" href="https://www.instagram.com/kcfixit_?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 7.38A4.62 4.62 0 1 0 12 16.62A4.62 4.62 0 1 0 12 7.38ZM12 15A3 3 0 1 1 12 9A3 3 0 1 1 12 15ZM17.89 7.19A1.08 1.08 0 1 1 15.73 7.19A1.08 1.08 0 1 1 17.89 7.19ZM20.96 8.29C20.89 6.86 20.56 5.59 19.51 4.54C18.47 3.5 17.19 3.17 15.76 3.09C14.29 3 9.71 3 8.24 3.09C6.82 3.16 5.54 3.49 4.49 4.54C3.44 5.59 3.12 6.86 3.04 8.29C2.95 9.76 2.95 14.24 3.04 15.71C3.11 17.14 3.44 18.41 4.49 19.46C5.54 20.51 6.81 20.84 8.24 20.91C9.71 21 14.29 21 15.76 20.91C17.19 20.84 18.46 20.51 19.51 19.46C20.56 18.41 20.89 17.14 20.96 15.71C21.05 14.24 21.05 9.76 20.96 8.29ZM19.03 17.21C18.72 17.99 18.12 18.59 17.34 18.9C16.17 19.36 13.39 19.25 12 19.25C10.61 19.25 7.82 19.36 6.66 18.9C5.88 18.59 5.28 17.99 4.97 17.21C4.51 16.05 4.62 13.26 4.62 11.88C4.62 10.49 4.51 7.71 4.97 6.54C5.28 5.77 5.88 5.17 6.66 4.86C7.82 4.39 10.61 4.5 12 4.5C13.39 4.5 16.17 4.39 17.34 4.86C18.11 5.16 18.71 5.77 19.03 6.54C19.49 7.71 19.38 10.49 19.38 11.88C19.38 13.26 19.49 16.05 19.03 17.21Z" fill="currentColor"/></svg><span>Instagram</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; <span data-year></span> KC Fixit. All rights reserved.</p>
+      <p>Website concept designed for premium industrial B2B conversion.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+

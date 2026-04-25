@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tile Adhesive Calculator | KC Fixit</title>
+<meta name="description" content="Estimate tile adhesive requirement with the KC Fixit Tile Adhesive Calculator using area, tile format, installation zone, and notch size."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="kc%20fixit%20website/favicon.png"/>
+<link rel="apple-touch-icon" href="kc%20fixit%20website/favicon.png"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg-top:#f7f1ea;
+  --bg-bottom:#f4f4f4;
+  --surface:#ffffff;
+  --surface-soft:rgba(255,255,255,0.84);
+  --surface-dark:#171d21;
+  --surface-dark-2:#101417;
+  --text:#111316;
+  --text-soft:#4f5d70;
+  --text-inverse:#f8f8f8;
+  --line:rgba(17,19,22,0.1);
+  --line-soft:rgba(255,255,255,0.1);
+  --accent:#f26a21;
+  --accent-2:#ff8542;
+  --accent-soft:rgba(242,106,33,0.12);
+  --nav-active:#4b5cc5;
+  --shadow-soft:0 22px 48px rgba(17,19,22,0.08);
+  --font-body:Inter,Arial,sans-serif;
+  --font-heading:Poppins,Inter,Arial,sans-serif;
+}
+
+body{
+  font-family:var(--font-body);
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(242,106,33,0.16), transparent 30%),
+    linear-gradient(180deg, var(--bg-top) 0%, #f6f3ef 46%, var(--bg-bottom) 100%);
+}
+
+.site-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:18px 24px;
+  background:rgba(255,255,255,0.92);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(12px);
+}
+
+.logo{
+  font-family:var(--font-heading);
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:-0.03em;
+  color:var(--text);
+}
+
+.logo span{color:var(--accent);}
+
+.header-sub{
+  color:#6d7480;
+  font-size:12px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+}
+
+.calculator-shell{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 1rem;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  padding:12px 22px;
+  border:1px solid rgba(242,106,33,0.28);
+  border-radius:999px;
+  background:rgba(255,255,255,0.62);
+  color:#d95a18;
+  font-size:0.86rem;
+  font-weight:700;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+}
+
+.calculator-shell{
+  padding-top:28px;
+  padding-bottom:48px;
+}
+
+.calculator-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(320px,0.92fr);
+  gap:24px;
+  align-items:start;
+}
+
+.calculator-card{
+  padding:30px;
+  border:1px solid rgba(19,22,23,0.08);
+  border-radius:32px;
+  background:rgba(255,255,255,0.9);
+  box-shadow:var(--shadow-soft);
+}
+
+.calculator-card h2{
+  margin:14px 0 16px;
+  font-family:var(--font-heading);
+  font-size:clamp(1.95rem,4vw,3rem);
+  line-height:1.02;
+  letter-spacing:-0.06em;
+}
+
+.calculator-card p{
+  color:var(--text-soft);
+  line-height:1.75;
+}
+
+.calculator-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px 24px;
+  margin-top:30px;
+}
+
+.calculator-field{
+  display:grid;
+  gap:10px;
+  font-size:0.92rem;
+  font-weight:700;
+  color:var(--text);
+}
+
+.calculator-field input,
+.calculator-field select{
+  width:100%;
+  min-height:54px;
+  padding:14px 20px;
+  border:1px solid rgba(19,22,23,0.12);
+  border-radius:18px;
+  background:var(--surface);
+  color:var(--text);
+  font:inherit;
+  outline:none;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+
+.calculator-field input:focus,
+.calculator-field select:focus{
+  border-color:rgba(242,106,33,0.42);
+  box-shadow:0 0 0 4px var(--accent-soft);
+}
+
+.calculator-card--result{
+  color:var(--text-inverse);
+  background:linear-gradient(160deg,var(--surface-dark) 0%,var(--surface-dark-2) 100%);
+  border-color:rgba(255,255,255,0.08);
+}
+
+.calculator-card--result p,
+.calculator-card--result .detail-list{
+  color:rgba(248,248,248,0.72);
+}
+
+.calculator-card--result .eyebrow{
+  border-color:rgba(255,255,255,0.16);
+  background:rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.9);
+}
+
+.calculator-output{
+  margin:20px 0 8px;
+  font-family:var(--font-heading);
+  font-size:clamp(3rem,5vw,4.6rem);
+  line-height:0.95;
+  letter-spacing:-0.08em;
+}
+
+.calculator-stats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:22px;
+  margin:36px 0 28px;
+}
+
+.calculator-stat{
+  padding:22px 26px;
+  border:1px solid var(--line-soft);
+  border-radius:28px;
+  background:rgba(255,255,255,0.04);
+}
+
+.calculator-stat span{
+  display:block;
+  color:rgba(248,248,248,0.58);
+  font-size:0.8rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+
+.calculator-stat strong{
+  display:block;
+  margin-top:10px;
+  font-size:1.2rem;
+  line-height:1.45;
+}
+
+.detail-list{
+  margin:0;
+  padding-left:1.2rem;
+}
+
+.detail-list li{
+  margin-bottom:16px;
+  line-height:1.7;
+}
+
+.calculator-note{
+  margin-top:18px;
+  padding-top:18px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  font-size:0.92rem;
+  line-height:1.7;
+}
+
+@media(max-width:960px){
+  .calculator-layout{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:720px){
+  .site-header{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:6px;
+    padding:16px 18px;
+  }
+
+  .header-sub{letter-spacing:0.12em;}
+
+  .calculator-card{
+    padding:24px;
+    border-radius:28px;
+  }
+
+  .calculator-grid,
+  .calculator-stats{
+    grid-template-columns:1fr;
+  }
+
+  .calculator-output{
+    font-size:clamp(2.6rem,15vw,4rem);
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="logo">KC<span> Fixit</span></div>
+  <div class="header-sub">Construction Chemical Systems</div>
+</div>
+
+<section class="calculator-shell">
+  <div class="calculator-layout">
+    <article class="calculator-card">
+      <span class="eyebrow">Coverage Inputs</span>
+      <h2>Build a quick planning estimate.</h2>
+      <p>Adjust the inputs below to match your tile format, zone, and site allowance. Results update instantly.</p>
+
+      <div class="calculator-grid">
+        <label class="calculator-field">
+          Area in sqm
+          <input id="calc-area" type="number" min="1" step="0.1" value="120"/>
+        </label>
+
+        <label class="calculator-field">
+          Tile format
+          <select id="calc-format">
+            <option value="ceramic">Ceramic up to 600 × 600</option>
+            <option value="vitrified">Vitrified / porcelain</option>
+            <option value="large">Large-format tile / slab</option>
+          </select>
+        </label>
+
+        <label class="calculator-field">
+          Installation zone
+          <select id="calc-zone">
+            <option value="floor" selected>Internal floor</option>
+            <option value="wall">Internal wall</option>
+            <option value="wet">Wet area / bathroom</option>
+            <option value="exterior">Exterior / terrace</option>
+          </select>
+        </label>
+
+        <label class="calculator-field">
+          Notch / bed size
+          <select id="calc-notch">
+            <option value="6">6 mm</option>
+            <option value="8" selected>8 mm</option>
+            <option value="10">10 mm</option>
+            <option value="12">12 mm</option>
+          </select>
+        </label>
+
+        <label class="calculator-field">
+          Wastage allowance
+          <select id="calc-waste">
+            <option value="5">5%</option>
+            <option value="8" selected>8%</option>
+            <option value="10">10%</option>
+            <option value="12">12%</option>
+          </select>
+        </label>
+
+        <label class="calculator-field">
+          Pack size
+          <select id="calc-pack">
+            <option value="20" selected>20 kg bag</option>
+            <option value="25">25 kg bag</option>
+          </select>
+        </label>
+      </div>
+    </article>
+
+    <aside class="calculator-card calculator-card--result">
+      <span class="eyebrow">Indicative Result</span>
+      <div class="calculator-output" id="calc-bags">27 Bags</div>
+      <p id="calc-kgs">Approx. 531 kg adhesive requirement for planning.</p>
+
+      <div class="calculator-stats">
+        <article class="calculator-stat">
+          <span>Consumption</span>
+          <strong id="calc-consumption">4.10 kg / sqm</strong>
+        </article>
+        <article class="calculator-stat">
+          <span>Recommended Grade</span>
+          <strong id="calc-grade">KC Fixit Advance</strong>
+        </article>
+        <article class="calculator-stat">
+          <span>Zone Logic</span>
+          <strong id="calc-zone-note">Internal floors usually follow standard bed logic.</strong>
+        </article>
+        <article class="calculator-stat">
+          <span>Pack Count</span>
+          <strong id="calc-pack-note">27 x 20 kg pack estimate.</strong>
+        </article>
+      </div>
+
+      <ul class="detail-list">
+        <li>Use this as a budgeting and planning estimate before final site testing.</li>
+        <li>Back-buttering, substrate correction, and installer practice can increase actual consumption.</li>
+        <li>For large-format, exterior, or critical substrates, confirm product choice with the KC Fixit team.</li>
+      </ul>
+
+      <p class="calculator-note">Planning only: final consumption can vary based on substrate flatness, notch method, coverage target, and tile back profile.</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+(() => {
+  const areaInput = document.getElementById("calc-area");
+  const formatInput = document.getElementById("calc-format");
+  const zoneInput = document.getElementById("calc-zone");
+  const notchInput = document.getElementById("calc-notch");
+  const wasteInput = document.getElementById("calc-waste");
+  const packInput = document.getElementById("calc-pack");
+
+  const bagsOutput = document.getElementById("calc-bags");
+  const kgsOutput = document.getElementById("calc-kgs");
+  const consumptionOutput = document.getElementById("calc-consumption");
+  const gradeOutput = document.getElementById("calc-grade");
+  const zoneNoteOutput = document.getElementById("calc-zone-note");
+  const packNoteOutput = document.getElementById("calc-pack-note");
+
+  const baseByNotch = {
+    6: 3.2,
+    8: 4.1,
+    10: 5.1,
+    12: 6.2
+  };
+
+  const formatMultiplier = {
+    ceramic: 1,
+    vitrified: 1.08,
+    large: 1.2
+  };
+
+  const zoneMultiplier = {
+    floor: 1,
+    wall: 1.06,
+    wet: 1.14,
+    exterior: 1.24
+  };
+
+  const zoneNotes = {
+    floor: "Internal floors usually follow standard bed logic.",
+    wall: "Wall application benefits from tighter control and reduced slip.",
+    wet: "Wet area requires stronger bond security.",
+    exterior: "Exterior exposure needs higher performance allowance."
+  };
+
+  const getRecommendedGrade = (format, zone) => {
+    if (format === "large" || zone === "exterior") {
+      return "KC Fixit Superflex";
+    }
+
+    if (format === "vitrified" || zone === "wet" || zone === "wall") {
+      return "KC Fixit Flex";
+    }
+
+    return "KC Fixit Advance";
+  };
+
+  const updateResult = () => {
+    const area = Math.max(0, Number(areaInput.value) || 0);
+    const format = formatInput.value;
+    const zone = zoneInput.value;
+    const notch = notchInput.value;
+    const waste = Number(wasteInput.value) || 0;
+    const packSize = Number(packInput.value) || 20;
+
+    const rate =
+      (baseByNotch[notch] || baseByNotch[8]) *
+      (formatMultiplier[format] || 1) *
+      (zoneMultiplier[zone] || 1);
+    const totalKg = area * rate * (1 + waste / 100);
+    const bags = Math.max(1, Math.ceil(totalKg / packSize));
+    const grade = getRecommendedGrade(format, zone);
+
+    bagsOutput.textContent = `${bags} Bags`;
+    kgsOutput.textContent = `Approx. ${totalKg.toFixed(0)} kg adhesive requirement for planning.`;
+    consumptionOutput.textContent = `${rate.toFixed(2)} kg / sqm`;
+    gradeOutput.textContent = grade;
+    zoneNoteOutput.textContent = zoneNotes[zone] || zoneNotes.floor;
+    packNoteOutput.textContent = `${bags} x ${packSize} kg pack estimate.`;
+  };
+
+  [areaInput, formatInput, zoneInput, notchInput, wasteInput, packInput].forEach((input) => {
+    input.addEventListener("input", updateResult);
+    input.addEventListener("change", updateResult);
+  });
+
+  updateResult();
+})();
+</script>
+</body>
+</html>

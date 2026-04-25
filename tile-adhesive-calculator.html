@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tile Adhesive Calculator | KC Fixit</title>
+  <meta name="description" content="Estimate tile adhesive and grout requirement with the KC Fixit product calculator using area, tile format, bed thickness, and joint inputs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .product-calculator-wrap {
+      display: grid;
+      gap: 22px;
+    }
+
+    .product-calculator-title {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .product-calculator-title h1 {
+      margin: 0;
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 2.9rem);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+
+    .product-calculator-title p {
+      margin: 0;
+      color: var(--text-soft);
+      max-width: 760px;
+      line-height: 1.75;
+    }
+
+    .product-calculator-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .product-calculator-tab {
+      padding: 12px 34px;
+      border: 2px solid #f26a21;
+      background: #fff;
+      color: #f26a21;
+      font: inherit;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+    }
+
+    .product-calculator-tab:first-child {
+      border-radius: 12px 0 0 12px;
+    }
+
+    .product-calculator-tab:last-child {
+      border-radius: 0 12px 12px 0;
+    }
+
+    .product-calculator-tab.is-active {
+      background: #f26a21;
+      color: #fff;
+    }
+
+    .product-calculator-grid {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .product-calculator-products {
+      background: #111417;
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .product-calculator-panel-head {
+      margin-bottom: 14px;
+      color: #f26a21;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .product-calculator-products-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .product-calculator-product {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #2b3138;
+      border-radius: 14px;
+      background: #1c2126;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .product-calculator-product:hover {
+      border-color: #f26a21;
+      transform: translateY(-1px);
+    }
+
+    .product-calculator-product.is-active {
+      border-color: #f26a21;
+      background: #2a160d;
+    }
+
+    .product-calculator-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 0.76rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .product-calculator-product-name {
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .product-calculator-product-type {
+      margin-top: 2px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .product-calculator-main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .product-calculator-preview {
+      border: 2px solid rgba(242, 106, 33, 0.24);
+      border-radius: 24px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .product-calculator-preview-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .product-calculator-preview-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 0.86rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .product-calculator-preview-name {
+      font-family: var(--font-heading);
+      font-size: clamp(1.2rem, 2.8vw, 1.7rem);
+      letter-spacing: -0.03em;
+    }
+
+    .product-calculator-preview-sub {
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .product-calculator-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0 14px;
+    }
+
+    .product-calculator-tag {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #fff3ee;
+      border: 1px solid rgba(242, 106, 33, 0.22);
+      color: #f26a21;
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .product-calculator-coverage {
+      padding: 12px 14px;
+      border-left: 3px solid #f26a21;
+      border-radius: 14px;
+      background: #f7f7f7;
+      color: var(--text-soft);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    .product-calculator-fields {
+      border-radius: 24px;
+      padding: 24px;
+      background: linear-gradient(160deg, #171d21 0%, #101417 100%);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .product-calculator-field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .product-calculator-field-grid--single {
+      grid-template-columns: 1fr;
+    }
+
+    .product-calculator-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .product-calculator-field label {
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 0.88rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .product-calculator-field input,
+    .product-calculator-field select {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 14px;
+      border: 1.5px solid #313a42;
+      border-radius: 14px;
+      background: #1d2328;
+      color: #fff;
+      font: inherit;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .product-calculator-field input:focus,
+    .product-calculator-field select:focus {
+      border-color: rgba(242, 106, 33, 0.72);
+      box-shadow: 0 0 0 4px rgba(242, 106, 33, 0.14);
+    }
+
+    .product-calculator-action {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px 18px;
+      border: 0;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f26a21 0%, #ff8542 100%);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 180ms ease, transform 180ms ease;
+    }
+
+    .product-calculator-action:hover {
+      filter: brightness(0.96);
+      transform: translateY(-1px);
+    }
+
+    .product-calculator-results {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .product-calculator-results--double {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .product-calculator-result-box {
+      border: 1.5px solid rgba(242, 106, 33, 0.45);
+      border-radius: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .product-calculator-result-label {
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.8rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .product-calculator-result-value {
+      margin-top: 8px;
+      color: #f26a21;
+      font-family: var(--font-heading);
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .product-calculator-result-note {
+      margin-top: 14px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.84rem;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 1080px) {
+      .product-calculator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .product-calculator-tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+      }
+
+      .product-calculator-tab {
+        flex: 0 0 auto;
+        padding: 11px 24px;
+      }
+
+      .product-calculator-products,
+      .product-calculator-preview,
+      .product-calculator-fields {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .product-calculator-field-grid,
+      .product-calculator-results--double {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-page="technical" data-nav-parent="technical.html">
+  <header class="site-header">
+    <div class="container header-shell">
+      <a class="brand-mark" href="index.html" aria-label="KC Fixit home">
+        <span class="brand-mark__name">KC Fixit</span>
+        <span class="brand-mark__tag">Construction Chemical Systems</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="site-nav" id="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="products.html">Products</a>
+        <div class="nav-dropdown">
+          <div class="nav-dropdown__control">
+            <button class="nav-dropdown__link" type="button" aria-expanded="false">Technical</button>
+            <button class="nav-dropdown__toggle" type="button" aria-expanded="false" aria-label="Toggle technical menu">
+              <span></span>
+            </button>
+          </div>
+          <div class="nav-dropdown__menu">
+            <a href="tile-adhesive-selector.html">Tile Adhesive Selector</a>
+            <a href="tile-adhesive-calculator.html">Tile Adhesive Calculator</a>
+            <a href="blogs.html">Blogs</a>
+            <a href="catalogue.html">Brochures</a>
+          </div>
+        </div>
+        <a href="contact.html">Contact</a>
+        <a class="button button--ghost button--small" href="dealer-inquiry.html">Dealer Inquiry</a>
+        <a class="button button--ghost button--small" href="catalogue.html">Download Catalogue</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container product-calculator-wrap">
+        <div class="product-calculator-title">
+          <h1>Tile Adhesive Calculator</h1>
+          <p>Estimate the quantity of adhesive or grout required for your project using the product calculator you shared.</p>
+        </div>
+
+        <div class="product-calculator-tabs" role="tablist" aria-label="Calculator type">
+          <button class="product-calculator-tab is-active" type="button" data-tab="adhesive" aria-selected="true">Tile Adhesive</button>
+          <button class="product-calculator-tab" type="button" data-tab="grout" aria-selected="false">Tile Grout</button>
+        </div>
+
+        <div class="product-calculator-grid">
+          <aside class="product-calculator-products">
+            <div class="product-calculator-panel-head" id="panel-title">Tile Adhesives</div>
+            <div class="product-calculator-products-list" id="products-list"></div>
+          </aside>
+
+          <div class="product-calculator-main">
+            <article class="product-calculator-preview">
+              <div class="product-calculator-preview-head">
+                <div class="product-calculator-preview-badge" id="preview-badge"></div>
+                <div>
+                  <div class="product-calculator-preview-name" id="preview-name"></div>
+                  <div class="product-calculator-preview-sub" id="preview-sub"></div>
+                </div>
+              </div>
+              <div class="product-calculator-tags" id="preview-tags"></div>
+              <div class="product-calculator-coverage" id="preview-coverage"></div>
+            </article>
+
+            <article class="product-calculator-fields" id="fields-section"></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <span class="brand-mark__name">KC Fixit</span>
+        <p>Premium construction chemical systems for tile fixing, grouting, waterproofing, plastering, block bonding, and polymer-led project support.</p>
+        <a class="button button--ghost button--small" href="contact.html">Send Enquiry</a>
+      </div>
+      <div>
+        <h3>Quick Links</h3>
+        <ul class="footer-links">
+          <li><a href="about.html">About</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="applications.html">Applications</a></li>
+          <li><a href="technical.html">Technical</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Key Inquiries</h3>
+        <ul class="footer-links">
+          <li><a href="dealer-inquiry.html">Dealer Inquiry</a></li>
+          <li><a href="project-inquiry.html">Project Inquiry</a></li>
+          <li><a href="catalogue.html">Download Catalogue</a></li>
+          <li><a href="mailto:kc.fixitt@gmail.com">kc.fixitt@gmail.com</a></li>
+          <li><a href="https://wa.me/917016577724">+917016577724</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <ul class="footer-links">
+          <li>Savani Brothers, Upper Ground Floor, FP-455B, Near Anath Ashram, Katargam Main Road, Katargam, Surat, Gujarat 395004</li>
+          <li><span class="social-badge" aria-label="LinkedIn"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.94 8.5H3.56V20H6.94V8.5ZM7.16 4.94C7.16 3.89 6.37 3.06 5.25 3.06C4.13 3.06 3.34 3.89 3.34 4.94C3.34 5.97 4.11 6.81 5.21 6.81H5.23C6.37 6.81 7.16 5.97 7.16 4.94ZM20.66 13.01C20.66 9.48 18.77 7.84 16.25 7.84C14.21 7.84 13.3 8.96 12.79 9.75V8.5H9.41C9.45 9.33 9.41 20 9.41 20H12.79V13.58C12.79 13.23 12.82 12.88 12.92 12.63C13.2 11.93 13.84 11.21 14.94 11.21C16.39 11.21 16.97 12.32 16.97 13.94V20H20.35V13.01H20.66Z" fill="currentColor"/></svg><span>LinkedIn</span></span></li>
+          <li><a class="social-badge" href="https://www.instagram.com/kcfixit_?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="social-badge__icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 7.38A4.62 4.62 0 1 0 12 16.62A4.62 4.62 0 1 0 12 7.38ZM12 15A3 3 0 1 1 12 9A3 3 0 1 1 12 15ZM17.89 7.19A1.08 1.08 0 1 1 15.73 7.19A1.08 1.08 0 1 1 17.89 7.19ZM20.96 8.29C20.89 6.86 20.56 5.59 19.51 4.54C18.47 3.5 17.19 3.17 15.76 3.09C14.29 3 9.71 3 8.24 3.09C6.82 3.16 5.54 3.49 4.49 4.54C3.44 5.59 3.12 6.86 3.04 8.29C2.95 9.76 2.95 14.24 3.04 15.71C3.11 17.14 3.44 18.41 4.49 19.46C5.54 20.51 6.81 20.84 8.24 20.91C9.71 21 14.29 21 15.76 20.91C17.19 20.84 18.46 20.51 19.51 19.46C20.56 18.41 20.89 17.14 20.96 15.71C21.05 14.24 21.05 9.76 20.96 8.29ZM19.03 17.21C18.72 17.99 18.12 18.59 17.34 18.9C16.17 19.36 13.39 19.25 12 19.25C10.61 19.25 7.82 19.36 6.66 18.9C5.88 18.59 5.28 17.99 4.97 17.21C4.51 16.05 4.62 13.26 4.62 11.88C4.62 10.49 4.51 7.71 4.97 6.54C5.28 5.77 5.88 5.17 6.66 4.86C7.82 4.39 10.61 4.5 12 4.5C13.39 4.5 16.17 4.39 17.34 4.86C18.11 5.16 18.71 5.77 19.03 6.54C19.49 7.71 19.38 10.49 19.38 11.88C19.38 13.26 19.49 16.05 19.03 17.21Z" fill="currentColor"/></svg><span>Instagram</span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; <span data-year></span> KC Fixit. All rights reserved.</p>
+      <p>Website concept designed for premium industrial B2B conversion.</p>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll(".product-calculator-tab"));
+      const productsList = document.getElementById("products-list");
+      const panelTitle = document.getElementById("panel-title");
+      const previewBadge = document.getElementById("preview-badge");
+      const previewName = document.getElementById("preview-name");
+      const previewSub = document.getElementById("preview-sub");
+      const previewTags = document.getElementById("preview-tags");
+      const previewCoverage = document.getElementById("preview-coverage");
+      const fieldsSection = document.getElementById("fields-section");
+
+      const adhesiveThicknesses = [3, 4, 6, 8, 10, 12, 15];
+      const groutJointWidths = [1, 2, 3];
+
+      const adhesives = [
+        {
+          id: "standard",
+          name: "KC Fixit Standard",
+          short: "Standard",
+          type: "Type 1 - C1TE",
+          badge: "T1",
+          color: "#c87941",
+          tags: ["Dry Area", "Indoor", "Ceramic", "Vitrified"],
+          packSize: 20,
+          packLabel: "20 kg bag",
+          description: "~45-55 sq.ft. per 20 kg bag at 3 mm bed with 6 x 6 mm notch."
+        },
+        {
+          id: "advance",
+          name: "KC Fixit Advance",
+          short: "Advance",
+          type: "Type 2 - C2TE",
+          badge: "T2",
+          color: "#7c5cb5",
+          tags: ["Wet Area", "Interior", "Exterior", "Vitrified", "Glass Mosaic"],
+          packSize: 20,
+          packLabel: "20 kg bag",
+          description: "~45-55 sq.ft. per 20 kg bag at 3 mm bed with 6 x 6 mm notch."
+        },
+        {
+          id: "xtreme",
+          name: "KC Fixit Xtreme",
+          short: "Xtreme",
+          type: "Type 3 - C2TE S1",
+          badge: "T3",
+          color: "#2f9fcc",
+          tags: ["Pool", "Sauna", "Natural Stone", "Porcelain"],
+          packSize: 20,
+          packLabel: "20 kg bag",
+          description: "~45-55 sq.ft. per 20 kg bag at 3 mm bed with 6 x 6 mm notch."
+        },
+        {
+          id: "flex",
+          name: "KC Fixit Flex",
+          short: "Flex",
+          type: "Type 4 - C2TE S1",
+          badge: "T4",
+          color: "#f26a21",
+          tags: ["Large Format", "Elevation", "High Flex", "Exterior"],
+          packSize: 20,
+          packLabel: "20 kg bag",
+          description: "~45-55 sq.ft. per 20 kg bag at 3 mm bed with 6 x 6 mm notch."
+        },
+        {
+          id: "superflex",
+          name: "KC Fixit Superflex",
+          short: "Superflex",
+          type: "Type 5 - PU Based",
+          badge: "T5",
+          color: "#8b1a1a",
+          tags: ["Metal", "Wood", "Glass", "Engineered Stone"],
+          packSize: 4,
+          packLabel: "4 kg pail",
+          description: "~12-16 sq.ft. per 4 kg pail at 3 mm bed."
+        },
+        {
+          id: "blockfix",
+          name: "KC Fixit Block Fix",
+          short: "Block Fix",
+          type: "Block Adhesive - AAC/CLC",
+          badge: "BF",
+          color: "#2a7a3b",
+          tags: ["AAC Blocks", "CLC Blocks", "Masonry"],
+          packSize: 40,
+          packLabel: "40 kg bag",
+          description: "~70-80 sq.ft. per 40 kg bag at 2-3 mm bed."
+        }
+      ];
+
+      const grouts = [
+        {
+          id: "tilegrout",
+          name: "KC Fixit Tile Grout",
+          short: "Tile Grout",
+          type: "CG1 - Cementitious",
+          badge: "CG",
+          color: "#8d8d8d",
+          tags: ["1-3 mm Joint", "Wall Tiles", "Floor Tiles", "Mosaic"],
+          packSizes: [{ label: "1 kg bag", kg: 1 }],
+          description: "Polymer modified cementitious grout for 1-3 mm tile joints.",
+          density: 1.7
+        },
+        {
+          id: "epoxy3k",
+          name: "KC Fixit Epoxyshield 3K",
+          short: "Epoxy 3K",
+          type: "EG-100/200 - Epoxy",
+          badge: "EK",
+          color: "#2f9fcc",
+          tags: ["Pool", "Kitchen", "Wet Area", "Stain Free"],
+          packSizes: [{ label: "1 kg bucket", kg: 1 }, { label: "5 kg bucket", kg: 5 }],
+          description: "3-component epoxy grout with stronger stain and water resistance.",
+          density: 1.7
+        }
+      ];
+
+      let currentTab = "adhesive";
+      let selectedProduct = adhesives[0];
+
+      function getActiveProducts() {
+        return currentTab === "adhesive" ? adhesives : grouts;
+      }
+
+      function adhesiveCoverage(thickness, product) {
+        if (product.id === "superflex") {
+          return Math.round((14 * 3) / thickness);
+        }
+
+        if (product.id === "blockfix") {
+          return thickness <= 3 ? 75 : 50;
+        }
+
+        return Math.round((50 * 3) / thickness);
+      }
+
+      function updatePreview(product) {
+        previewBadge.textContent = product.badge;
+        previewBadge.style.background = `${product.color}22`;
+        previewBadge.style.color = product.color;
+        previewName.textContent = product.name;
+        previewSub.textContent = product.type;
+        previewTags.innerHTML = product.tags
+          .map((tag) => `<span class="product-calculator-tag">${tag}</span>`)
+          .join("");
+        previewCoverage.textContent = product.description;
+      }
+
+      function renderProductList() {
+        const products = getActiveProducts();
+        productsList.innerHTML = "";
+
+        products.forEach((product) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `product-calculator-product${selectedProduct.id === product.id ? " is-active" : ""}`;
+          button.innerHTML = `
+            <span class="product-calculator-badge" style="background:${product.color}22;color:${product.color};">${product.badge}</span>
+            <span>
+              <span class="product-calculator-product-name">${product.short}</span>
+              <span class="product-calculator-product-type">${product.type}</span>
+            </span>
+          `;
+          button.addEventListener("click", () => {
+            selectedProduct = product;
+            renderProductList();
+            updatePreview(product);
+            renderFields(product);
+          });
+          productsList.appendChild(button);
+        });
+      }
+
+      function renderTabs() {
+        tabs.forEach((tab) => {
+          const isActive = tab.dataset.tab === currentTab;
+          tab.classList.toggle("is-active", isActive);
+          tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+      }
+
+      function buildAdhesiveFields(product) {
+        const thicknessOptions = adhesiveThicknesses
+          .map((value) => `<option value="${value}">${value} mm</option>`)
+          .join("");
+
+        fieldsSection.innerHTML = `
+          <div class="product-calculator-field-grid">
+            <div class="product-calculator-field">
+              <label for="adh-area">Enter Area (sq. ft.)</label>
+              <input id="adh-area" type="number" min="1" step="0.1" value="250">
+            </div>
+            <div class="product-calculator-field">
+              <label for="adh-thickness">Bed Thickness (depth)</label>
+              <select id="adh-thickness">${thicknessOptions}</select>
+            </div>
+          </div>
+          <button class="product-calculator-action" type="button" id="adh-calculate">Calculate Quantity</button>
+          <div class="product-calculator-results">
+            <div class="product-calculator-result-box">
+              <div class="product-calculator-result-label">Total Product Required (${product.packLabel}s)</div>
+              <div class="product-calculator-result-value" id="adh-result">0</div>
+            </div>
+          </div>
+          <div class="product-calculator-result-note" id="adh-note"></div>
+        `;
+
+        const areaInput = document.getElementById("adh-area");
+        const thicknessInput = document.getElementById("adh-thickness");
+        const result = document.getElementById("adh-result");
+        const note = document.getElementById("adh-note");
+
+        function calculate() {
+          const area = Math.max(0, Number(areaInput.value) || 0);
+          const thickness = Math.max(3, Number(thicknessInput.value) || 3);
+          const coverage = Math.max(1, adhesiveCoverage(thickness, product));
+          const packs = area > 0 ? Math.ceil(area / coverage) : 0;
+          const totalKg = packs * product.packSize;
+
+          result.textContent = `${packs}`;
+          note.textContent = `Approx. coverage is ${coverage} sq.ft. per ${product.packLabel}. That equals about ${totalKg} kg of ${product.short} for this estimate.`;
+        }
+
+        document.getElementById("adh-calculate").addEventListener("click", calculate);
+        areaInput.addEventListener("input", calculate);
+        thicknessInput.addEventListener("change", calculate);
+        calculate();
+      }
+
+      function buildGroutFields(product) {
+        const jointWidthOptions = groutJointWidths
+          .map((value) => `<option value="${value}">${value} mm</option>`)
+          .join("");
+
+        const resultBoxes = product.packSizes
+          .map(
+            (pack, index) => `
+              <div class="product-calculator-result-box">
+                <div class="product-calculator-result-label">Total Product Required (${pack.label})</div>
+                <div class="product-calculator-result-value" id="grout-result-${index}">0</div>
+              </div>
+            `
+          )
+          .join("");
+
+        fieldsSection.innerHTML = `
+          <div class="product-calculator-field-grid">
+            <div class="product-calculator-field">
+              <label for="grout-area">Enter Area (sq. ft.)</label>
+              <input id="grout-area" type="number" min="1" step="0.1" value="120">
+            </div>
+            <div class="product-calculator-field">
+              <label for="grout-length">Tile Length (mm)</label>
+              <input id="grout-length" type="number" min="50" step="1" value="600">
+            </div>
+            <div class="product-calculator-field">
+              <label for="grout-width">Tile Width (mm)</label>
+              <input id="grout-width" type="number" min="50" step="1" value="600">
+            </div>
+            <div class="product-calculator-field">
+              <label for="grout-thickness">Tile Thickness (mm)</label>
+              <input id="grout-thickness" type="number" min="3" step="0.5" value="10">
+            </div>
+            <div class="product-calculator-field">
+              <label for="grout-joint">Joint Width</label>
+              <select id="grout-joint">${jointWidthOptions}</select>
+            </div>
+            <div class="product-calculator-field">
+              <label for="grout-waste">Extra Allowance</label>
+              <select id="grout-waste">
+                <option value="5">5%</option>
+                <option value="8" selected>8%</option>
+                <option value="10">10%</option>
+              </select>
+            </div>
+          </div>
+          <button class="product-calculator-action" type="button" id="grout-calculate">Calculate Quantity</button>
+          <div class="product-calculator-results${product.packSizes.length > 1 ? " product-calculator-results--double" : ""}">
+            ${resultBoxes}
+          </div>
+          <div class="product-calculator-result-note" id="grout-note"></div>
+        `;
+
+        const areaInput = document.getElementById("grout-area");
+        const lengthInput = document.getElementById("grout-length");
+        const widthInput = document.getElementById("grout-width");
+        const thicknessInput = document.getElementById("grout-thickness");
+        const jointInput = document.getElementById("grout-joint");
+        const wasteInput = document.getElementById("grout-waste");
+        const note = document.getElementById("grout-note");
+
+        function calculate() {
+          const areaSqFt = Math.max(0, Number(areaInput.value) || 0);
+          const tileLength = Math.max(1, Number(lengthInput.value) || 1);
+          const tileWidth = Math.max(1, Number(widthInput.value) || 1);
+          const tileThickness = Math.max(1, Number(thicknessInput.value) || 1);
+          const jointWidth = Math.max(1, Number(jointInput.value) || 1);
+          const waste = Number(wasteInput.value) || 0;
+
+          const areaSqM = areaSqFt * 0.092903;
+          const kgPerSqM =
+            ((tileLength + tileWidth) / (tileLength * tileWidth)) *
+            jointWidth *
+            tileThickness *
+            product.density;
+          const totalKg = areaSqM * kgPerSqM * (1 + waste / 100);
+
+          product.packSizes.forEach((pack, index) => {
+            const element = document.getElementById(`grout-result-${index}`);
+            element.textContent = `${Math.ceil(totalKg / pack.kg)}`;
+          });
+
+          note.textContent = `Approx. grout consumption is ${totalKg.toFixed(2)} kg including ${waste}% extra allowance for site variation.`;
+        }
+
+        document.getElementById("grout-calculate").addEventListener("click", calculate);
+        [areaInput, lengthInput, widthInput, thicknessInput, jointInput, wasteInput].forEach((input) => {
+          input.addEventListener("input", calculate);
+          input.addEventListener("change", calculate);
+        });
+        calculate();
+      }
+
+      function renderFields(product) {
+        if (currentTab === "adhesive") {
+          buildAdhesiveFields(product);
+        } else {
+          buildGroutFields(product);
+        }
+      }
+
+      function switchTab(nextTab) {
+        currentTab = nextTab;
+        panelTitle.textContent = nextTab === "adhesive" ? "Tile Adhesives" : "Tile Grouts";
+        selectedProduct = getActiveProducts()[0];
+        renderTabs();
+        renderProductList();
+        updatePreview(selectedProduct);
+        renderFields(selectedProduct);
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+      });
+
+      switchTab("adhesive");
+    })();
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>
